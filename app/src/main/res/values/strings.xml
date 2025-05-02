@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Lab20</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="color_not_selected">Цвет не выбран</string>
+    <string name="color_selected">Выбран цвет: %s </string>
+    <string name="text_explanation">Для корректной работы приложению требуется разрешение на доступ к уведомлениям, иначе приложение не будет работать должным образом.\n\nЕсли Вы хотите дать прогламме еще один шанс, выдайте соответсвующее разрешение в настройках</string>
+    <string name="btn_back">Назад</string>
+    <string name="btn_open_settings">Открыть настройки</string>
+
+
 </resources>
