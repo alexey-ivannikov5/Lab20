@@ -11,23 +11,21 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Action
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ru.alexeyivannikov.lab20.databinding.FragmentColorBinding
-import androidx.core.graphics.toColorInt
 
 class ColorFragment : Fragment() {
 
@@ -36,13 +34,12 @@ class ColorFragment : Fragment() {
         get() = _binding ?: throw RuntimeException()
 
     val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
 
+        override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 COLOR_ACTION -> {
                     val colorHex =
                         RemoteInput.getResultsFromIntent(intent)?.getCharSequence(KEY_COLOR).toString()
-                    Log.d("NOTIFICSTION", colorHex)
                     selectColor(colorHex)
                     cancelNotification()
                 }
@@ -142,7 +139,7 @@ class ColorFragment : Fragment() {
             build()
         }
 
-        val setColorIntent = Intent().apply {
+        val setColorIntent = Intent("ru.alexeyivannikov.lab20").apply {
             action = COLOR_ACTION
         }
         setColorIntent.setPackage(PACKAGE)
@@ -154,10 +151,18 @@ class ColorFragment : Fragment() {
             PendingIntent.FLAG_MUTABLE
         )
 
+
         val setColorAction =
             Action.Builder(R.drawable.notification_bell, "Ввести цвет", setColorPendingIntent)
                 .addRemoteInput(colorInput)
                 .build()
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(requireActivity(), CHANNEL_ID)
             .setSmallIcon(R.drawable.notification_bell)
@@ -165,6 +170,7 @@ class ColorFragment : Fragment() {
             .setContentText("Можно ввести цвет, например \"#FFAABB\"")
             .addAction(R.drawable.notification_bell, "Сбросить цвет", actionRejectPendingIntent)
             .addAction(setColorAction)
+            .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
 
@@ -176,8 +182,6 @@ class ColorFragment : Fragment() {
         ) {
             return
         }
-
-
         notificationManager.notify("tag", NOTIFICATION_ID, notification)
     }
 
@@ -209,7 +213,7 @@ class ColorFragment : Fragment() {
     }
 
     companion object {
-        const val NOTIFICATION_ID = 1488
+        const val NOTIFICATION_ID = 14
         const val PACKAGE = "ru.alexeyivannikov.lab20"
         const val COLOR_ACTION = "$PACKAGE.select_color"
         const val REJECT_ACTION = "$PACKAGE.reject"
